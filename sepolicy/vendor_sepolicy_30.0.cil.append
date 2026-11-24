@@ -1,0 +1,7 @@
+; Adapted from NEESS-COS-AOD-FOD-FIX for psyche plat_sepolicy_vers = 30.0
+(allow hal_fingerprint_default sysfs_30_0 (file (read write open getattr)))
+(allow hal_fingerprint_default sysfs_30_0 (dir (search read open)))
+(allow hal_fingerprint_default system_server_30_0 (binder (call transfer)))
+(allow system_server_30_0 hal_fingerprint_default (binder (call transfer)))
+(allow hal_fingerprint_default default_prop_30_0 (file (read open getattr map)))
+(allow hal_fingerprint_default system_prop_30_0 (file (read open getattr map)))

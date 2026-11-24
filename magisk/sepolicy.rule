@@ -1,0 +1,6 @@
+allow hal_fingerprint_default sysfs file { read write open getattr }
+allow hal_fingerprint_default sysfs dir { search read open }
+allow hal_fingerprint_default system_server binder { call transfer }
+allow system_server hal_fingerprint_default binder { call transfer }
+allow hal_fingerprint_default default_prop file { read open getattr map }
+allow hal_fingerprint_default system_prop file { read open getattr map }

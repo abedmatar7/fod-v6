@@ -1,0 +1,6 @@
+id=neess_cos17_psyche_fod_aod
+name=NEESS ColorOS 17 FOD & AOD Fix (Xiaomi 12X / psyche)
+version=v6.0.0-psyche-aio
+versionCode=600
+author=Adapted from NEESCHAL-3/NEESS-COS-AOD-FOD-FIX
+description=All-in-One ColorOS 17 FOD & AOD fix for Xiaomi 12X (psyche): session-gated HBM, fod_ui_ready==3 sync for 1-tap Goodix accuracy, no lockscreen dimlayer, and bundled fx.tunnel@1.0.so.
