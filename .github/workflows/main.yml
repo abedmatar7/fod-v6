@@ -1,0 +1,58 @@
+name: Build NEESS ColorOS 17 Psyche FOD & AOD v6 All-in-One Magisk Module
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust & aarch64-linux-android target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r27c
+
+      - name: Build psyche_aodd (aarch64)
+        working-directory: aod
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          cargo ndk -t arm64-v8a --platform 34 build --release
+
+      - name: Build psyche_extcmd (aarch64 vendor helper)
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          mkdir -p dist/system/vendor/bin
+          "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++" \
+            -O2 -std=c++17 -fPIE -pie -static-libstdc++ -ldl \
+            fod/psyche_extcmd.cpp -o dist/system/vendor/bin/psyche_extcmd
+
+      - name: Package All-in-One Magisk Module ZIP
+        run: |
+          mkdir -p dist/system/bin dist/system/etc/init
+          cp -r magisk/* dist/
+          cp aod/target/aarch64-linux-android/release/psyche-aodd dist/system/bin/psyche_aodd
+          cp aod/psyche_aodd.rc dist/system/etc/init/psyche_aodd.rc
+          cd dist
+          zip -r9 ../NEESS-COS17-Psyche-FOD-AOD-Fix-v6-AllInOne-Magisk.zip .
+
+      - name: Upload Magisk Module Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEESS-COS17-Psyche-FOD-AOD-Fix-v6-AllInOne-Magisk
+          path: NEESS-COS17-Psyche-FOD-AOD-Fix-v6-AllInOne-Magisk.zip
